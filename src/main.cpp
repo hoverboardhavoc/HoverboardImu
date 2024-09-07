@@ -1,3 +1,4 @@
+#define DEFAULT_HWSERIAL_INSTANCE 2
 #include <Arduino.h>
 #include <Wire.h>
 
@@ -6,17 +7,17 @@ uint8_t High_Address = 127;
 
 void debug(byte address)
 {
-  Serial2.print("Found at 0x");
-  Serial2.println(address, HEX);
+  Serial.print("Found at 0x");
+  Serial.println(address, HEX);
 }
 
 void setup()
 {
-  Serial2.begin(19200);
-  while (!Serial2)
+  Serial.begin(19200);
+  while (!Serial)
   {
   };
-  Serial2.print("Hello world");
+  Serial.print("Hello world");
   Wire.begin();
 }
 
