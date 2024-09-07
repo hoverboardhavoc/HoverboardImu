@@ -1,13 +1,7 @@
 #include <Arduino.h>
-#include <I2CScanner.h>
+#include "MPU9250.h"
 
-I2CScanner scanner;
-
-void debug(byte address)
-{
-  Serial2.print("Found at 0x");
-  Serial2.println(address, HEX);
-}
+MPU9250 mpu; // You can also use MPU9255 as is
 
 void setup()
 {
@@ -16,11 +10,23 @@ void setup()
   {
   };
   Serial2.print("Hello world");
-  scanner.Init();
+  Wire.begin();
+  delay(2000);
+
+  mpu.setup(0x68); 
+
+  Serial2.print("Setup done");
+  // change to your own address
 }
 
 void loop()
 {
-  scanner.Execute(debug);
-  delay(5000);
+  if (mpu.update())
+  {
+    Serial2.print(mpu.getYaw());
+    Serial.print(", ");
+    Serial2.print(mpu.getPitch());
+    Serial.print(", ");
+    Serial2.println(mpu.getRoll());
+  }
 }
