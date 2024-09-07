@@ -1,19 +1,26 @@
 #include <Arduino.h>
+#include <I2CScanner.h>
 
+I2CScanner scanner;
 
-void setup() {
-    pinMode(PB2, OUTPUT);
-    pinMode(PB5, OUTPUT);
+void debug(byte address)
+{
+  Serial2.print("Found at 0x");
+  Serial2.println(address, HEX);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  digitalWrite(PB2, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(500);   
-  digitalWrite(PB5, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(500);   
-  digitalWrite(PB2, LOW);   // turn the LED off by making the voltage LOW
-  delay(500);
-  digitalWrite(PB5, LOW);   // turn the LED off by making the voltage LOW
-  delay(500);                      // wait for a second
+void setup()
+{
+  Serial2.begin(19200);
+  while (!Serial2)
+  {
+  };
+  Serial2.print("Hello world");
+  scanner.Init();
+}
+
+void loop()
+{
+  scanner.Execute(debug);
+  delay(5000);
 }
