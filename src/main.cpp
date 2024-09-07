@@ -1,7 +1,8 @@
 #include <Arduino.h>
-#include <I2CScanner.h>
+#include <Wire.h>
 
-I2CScanner scanner;
+uint8_t Low_Address = 1;
+uint8_t High_Address = 127;
 
 void debug(byte address)
 {
@@ -16,11 +17,26 @@ void setup()
   {
   };
   Serial2.print("Hello world");
-  scanner.Init();
+  Wire.begin();
+}
+
+byte scan(byte address)
+{
+  Wire.beginTransmission(address);
+  byte error = Wire.endTransmission();
+  return error;
 }
 
 void loop()
 {
-  scanner.Execute(debug);
+  for (byte address = Low_Address; address < High_Address; address++)
+  {
+    byte error = scan(address);
+    if (error == 0)
+    {
+      debug(address);
+    }
+  }
+
   delay(5000);
 }
