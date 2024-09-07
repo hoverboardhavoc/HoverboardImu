@@ -33,6 +33,7 @@ THE SOFTWARE.
 
 // I2Cdev and MPU6050 must be installed as libraries, or else the .cpp/.h files
 // for both classes must be in the include path of your project
+#define DEFAULT_HWSERIAL_INSTANCE 2
 #include "I2Cdev.h"
 #include "MPU6050.h"
 
@@ -79,18 +80,18 @@ void setup()
   // initialize serial communication
   // (38400 chosen because it works as well at 8MHz as it does at 16MHz, but
   // it's really up to you depending on your project)
-  Serial2.begin(19200);
-  while (!Serial2)
+  Serial.begin(19200);
+  while (!Serial)
   {
   };
 
   // initialize device
-  Serial2.println("Initializing I2C devices...");
+  Serial.println("Initializing I2C devices...");
   accelgyro.initialize();
 
   // verify connection
-  Serial2.println("Testing device connections...");
-  Serial2.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+  Serial.println("Testing device connections...");
+  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
 
   // use the code below to change accel/gyro offset values
   /*
@@ -128,20 +129,21 @@ void loop()
   // accelgyro.getAcceleration(&ax, &ay, &az);
   // accelgyro.getRotation(&gx, &gy, &gz);
 
+  
 #ifdef OUTPUT_READABLE_ACCELGYRO
   // display tab-separated accel/gyro x/y/z values
-  Serial2.print("a/g:\t");
-  Serial2.print(ax);
+  Serial.print("a/g:\t");
+  Serial.print(ax);
   Serial.print("\t");
-  Serial2.print(ay);
+  Serial.print(ay);
   Serial.print("\t");
-  Serial2.print(az);
+  Serial.print(az);
   Serial.print("\t");
-  Serial2.print(gx);
+  Serial.print(gx);
   Serial.print("\t");
-  Serial2.print(gy);
+  Serial.print(gy);
   Serial.print("\t");
-  Serial2.println(gz);
+  Serial.println(gz);
 #endif
 
 #ifdef OUTPUT_BINARY_ACCELGYRO
