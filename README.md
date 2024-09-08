@@ -304,10 +304,12 @@ Installation Steps
 * Install Install [VScode](https://code.visualstudio.com/) and [Plafrom IO](https://platformio.org/). Follow [this](https://www.youtube.com/watch?v=PYSy_PLjytQ) PlatformIO tutorial for setup.
 * Connect the SWDIO, SWCLK, 3.3V, and GND pins (as marked on the image) to the ST-Link V2.
 * For serial output, connect the UART port to your computer. Use a [USB-to-UART converter](https://www.aliexpress.com/item/1005005847955898.html):
-  RX on the motherboard -> TX on the UART converter
-  TX on the motherboard -> RX on the UART converter
-  GND -> GND
-  The UART marked RX and TX is for USART1 (PA3 for RX and PA2 for TX on the microcontroller).
+  - RX on the motherboard -> TX on the UART converter
+  - TX on the motherboard -> RX on the UART converter
+  - GND -> GND
+  
+
+The UART marked RX and TX is for USART1 (PA3 for RX and PA2 for TX on the microcontroller).
 
 Powering the motherboard via the ST-Link V2 clone works for debugging the IMU.
 
