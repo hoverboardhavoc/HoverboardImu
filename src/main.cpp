@@ -2,6 +2,28 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+//#define MPU6050LIKE
+
+void readRegister(byte deviceAddress, byte registerAddress)
+{
+  Wire.beginTransmission(deviceAddress); // Start transmission to the device
+  Wire.write(registerAddress);           // Send the register address to read
+  byte error = Wire.endTransmission();
+  if (error == 0)
+  {                                           // Check if transmission was successful
+    Wire.requestFrom(deviceAddress, (byte)1); // Request 1 byte from the device
+    delay(5);
+    if (Wire.available())
+    {
+      Serial.print("device address: 0x");
+      Serial.print(deviceAddress, HEX);
+      Serial.print(" register address: 0x");
+      Serial.print(registerAddress, HEX);
+      Serial.print(" value: 0x");
+      Serial.println(Wire.read(), HEX); // Return the byte read from the register
+    }
+  }
+}
 
 void setupDevice(byte address)
 {
@@ -25,8 +47,9 @@ void setupDevice(byte address)
   Wire.endTransmission();
 }
 
-void fetchData(byte address) {
-    Wire.beginTransmission(address);
+void fetchData(byte address)
+{
+  Wire.beginTransmission(address);
   Wire.write(0x3B); // starting register for accelerometer data
   Wire.endTransmission();
   Wire.requestFrom(address, 14, true);            // request a total of 14 registers
@@ -80,9 +103,16 @@ void loop()
     byte error = scan(address);
     if (error == 0)
     {
+#ifdef MPU6050LIKE
       setupDevice(address);
-      for (int i = 0; i < 1000; i++) {
+      for (int i = 0; i < 1000; i++)
+      {
         fetchData(address);
+      }
+#endif
+      for (byte registerAddress = 0x00; registerAddress <= 0xFF; registerAddress++)
+      {
+        readRegister(address, registerAddress);
       }
     }
   }
