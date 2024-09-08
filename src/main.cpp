@@ -2,23 +2,68 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-uint8_t Low_Address = 1;
-uint8_t High_Address = 127;
 
-void debug(byte address)
+void setupDevice(byte address)
 {
-  Serial.print("Found at 0x");
+  // Inspired by https://forum.arduino.cc/t/i2c-protocol-tutorial-using-an-mpu6050/387512
+  Serial.print("Probing device at at 0x");
   Serial.println(address, HEX);
+
+  Wire.beginTransmission(address);
+  Wire.write(0x6B); // PWR_MGMT_1 register
+  Wire.write(0);    // set to zero (wakes up the MPU-6050)
+  Wire.endTransmission();
+
+  Wire.beginTransmission(address);
+  Wire.write(0x1B);
+  Wire.write(0x10);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(address);
+  Wire.write(0x1C);
+  Wire.write(0x00);
+  Wire.endTransmission();
+}
+
+void fetchData(byte address) {
+    Wire.beginTransmission(address);
+  Wire.write(0x3B); // starting register for accelerometer data
+  Wire.endTransmission();
+  Wire.requestFrom(address, 14, true);            // request a total of 14 registers
+  int16_t accX = Wire.read() << 8 | Wire.read();  // 0x3B (accX high byte) and 0x3C (accX low byte)
+  int16_t accY = Wire.read() << 8 | Wire.read();  // 0x3D (accY high byte) and 0x3E (accY low byte)
+  int16_t accZ = Wire.read() << 8 | Wire.read();  // 0x3F (accZ high byte) and 0x40 (accZ low byte)
+  int16_t temp = Wire.read() << 8 | Wire.read();  // 0x41 (temp high byte) and 0x42 (temp low byte)
+  int16_t gyroX = Wire.read() << 8 | Wire.read(); // 0x43 (gyroX high byte) and 0x44 (gyroX low byte)
+  int16_t gyroY = Wire.read() << 8 | Wire.read(); // 0x45 (gyroY high byte) and 0x46 (gyroY low byte)
+  int16_t gyroZ = Wire.read() << 8 | Wire.read(); // 0x47 (gyroZ high byte) and 0x48 (gyroZ low byte)
+
+  // Print the values to the serial monitor
+  Serial.print("AccX: ");
+  Serial.print(accX);
+  Serial.print(" AccY: ");
+  Serial.print(accY);
+  Serial.print(" AccZ: ");
+  Serial.print(accZ);
+  Serial.print(" Temp: ");
+  Serial.print(temp / 340.00 + 36.53); // temperature formula?? Does not work
+  Serial.print(" GyroX: ");
+  Serial.print(gyroX);
+  Serial.print(" GyroY: ");
+  Serial.print(gyroY);
+  Serial.print(" GyroZ: ");
+  Serial.println(gyroZ);
 }
 
 void setup()
 {
-  Serial.begin(19200);
+  Serial.begin(115200);
   while (!Serial)
   {
   };
-  Serial.print("Hello world");
+
   Wire.begin();
+  Serial.println("Hello world");
 }
 
 byte scan(byte address)
@@ -30,14 +75,15 @@ byte scan(byte address)
 
 void loop()
 {
-  for (byte address = Low_Address; address < High_Address; address++)
+  for (byte address = 1; address < 127; address++)
   {
     byte error = scan(address);
     if (error == 0)
     {
-      debug(address);
+      setupDevice(address);
+      for (int i = 0; i < 1000; i++) {
+        fetchData(address);
+      }
     }
   }
-
-  delay(5000);
 }
